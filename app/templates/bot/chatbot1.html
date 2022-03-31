@@ -11,25 +11,19 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="static/css/chat.css" />
+    <link rel="stylesheet" href="static/css/home.css" />
+
+    <!-- FONT AWESOME -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
   </head>
   <body>
     <div class="container px-4">
       <br />
-      <form class="row" action="" method="post">
-        {% csrf_token %}
 
-        <div class="row gx-3 gy-2">
-          <div class="col-md-2"></div>
-          <div class="col-md-4">
-            <label for="inputAddress" class="form-label">Ask me anything</label>
-            <input name="message" />
-          </div>
-          <div class="col-md-2">
-            <button type="submit" class="btn btn-success">Send</button>
-          </div>
-          \
-        </div>
-      </form>
       <br />
       <br />
       <div class="row">
@@ -39,11 +33,70 @@
         </div>
       </div>
     </div>
+    <!-- chatbar block -->
+    <div class="chatbar-collapsible">
+      <button id="chat-button" class="collapsible" type="button">
+        AedificoBot
+        <i
+          id="chat-icon"
+          style="color: #fff"
+          class="fa fa-fw fa-comments-o"
+        ></i>
+      </button>
+      <div class="content">
+        <div class="full-chat-block">
+          <!-- message container -->
+          <div class="outer-container">
+            <div class="chat-container">
+              <!-- message -->
+              <div id="chatBox">
+                <h6 id="chat-timestamp"></h6>
+                <p id="botStarterMessage" class="botText">
+                  <span>Loading...</span>
+                </p>
+              </div>
+              <!-- User input box -->
+              <form action="" method="post" style="display-inline">
+                <div class="chatbar-input-block">
+                  {% csrf_token %}
 
+                  <div id="userInput">
+                    <input
+                      type="text"
+                      id="textInput"
+                      class="input-box"
+                      name="msg"
+                      placeholder="Tap Enter to send a message"
+                    />
+                    <p></p>
+                  </div>
+                  <div class="chatbar-icons">
+                    <i
+                      id="chat-icon"
+                      type="submit"
+                      style="color: "#333"
+                      class="fa fa-fw fa-send"
+                      onclick="sendButton()"
+                    ></i>
+                  </div>
+                </div>
+              </form>
+              <div id="chatbar-bottom">
+                <p></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
       crossorigin="anonymous"
     ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   </body>
+  <script type="text/javascript" src="static/scripts/responses.js"></script>
+  <script type="text/javascript" src="static/scripts/chat.js"></script>
+  {% include 'bot/ajax.html' %}
 </html>

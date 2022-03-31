@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 from chatterbot.trainers import ChatterBotCorpusTrainer
+from django.http import JsonResponse
 # Create your views here.
 @login_required(login_url='login')
 def home(request):
@@ -38,11 +39,13 @@ def chatbotPage(request):
     database_uri='sqlite:///database.sqlite3'
 )
   if request.method=='POST':
-    print(request.POST['message'])
 
-    response=chatbot.get_response(request.POST['message'])
-    print('response:',response)
-    return render(request,'bot/chatbot1.html',{'response':response})
+    response=chatbot.get_response(request.POST.get('a',"False"))
+    
+    data={'response':str(response)}
+    print(data)
+
+    return JsonResponse({'status':'OK','response':str(response)})
   else:
  
 

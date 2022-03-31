@@ -1,0 +1,41 @@
+<script>
+  let userText = "";
+  $(document).on("keypress", "#textInput", function (e) {
+    if (e.keyCode == 13) {
+      e.preventDefault();
+      sendButton();
+    }
+  });
+
+  function sendButton() {
+    let text = $("#textInput").val();
+    let csr = $("input[name=csrfmiddlewaretoken]").val();
+    mydata = { a: text, csrfmiddlewaretoken: csr };
+    if (text == "") {
+      text = "Pressed Enter";
+    }
+    $.ajax({
+      url: "{% url 'chatbot' %}",
+      method: "POST",
+      data: mydata,
+      success: function (data) {
+        if (data.status == "OK") {
+          userText = data.response;
+        } else {
+          console.log("No response");
+        }
+      },
+    });
+    let userHTML = "<p class='userText'><span>" + text + "</span></p>";
+    $("#textInput").val("");
+    $("#chatBox").append(userHTML);
+    document.getElementById("chatbar-bottom").scrollIntoView(true);
+    console.log(userText);
+    setTimeout(() => {
+      let botResponse = userText;
+      let botHTML = "<p class='botText'><span>" + botResponse + "</span></p>";
+      $("#chatBox").append(botHTML);
+      document.getElementById("chatbar-bottom").scrollIntoView(true);
+    }, 4000);
+  }
+</script>
