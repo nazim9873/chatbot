@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponseRedirect
 from .models import Intent
 from .forms import CreateUserForm,IntentForm
 from django.contrib import messages
@@ -8,23 +8,52 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 from chatterbot.trainers import ChatterBotCorpusTrainer
 from django.http import JsonResponse
+from .models import User
 # Create your views here.
 @login_required(login_url='login')
 def home(request):
-  form=IntentForm()
+  form=IntentForm(initial={'user':request.user})
+  user=request.user
   if request.method=='POST':
-    form=IntentForm(request.POST)
+    data=request.POST.copy()
+    userobj=User.objects.get(username=user)
+    data['user']=userobj
+    form=IntentForm(data)
     if form.is_valid():
       form.save()
       return redirect('home')
-  intent=Intent.objects.all()
-  context={'form':form,'intent':intent}
+  intent=user.intent_set.all()
+  context={'form':form,'intent':intent,'user':user}
   return render(request,'accounts/home.html',context)
 
+def edit_intent(request,pk):
+  if request.method=='POST':
+    intent=Intent.objects.get(id=pk)
+    data=request.POST.copy()
+    userobj=intent.user
+    data['user']=userobj
+    form=IntentForm(data,instance=intent)
+    print(form)
+    if form.is_valid():
+      form.save()
+      return redirect('/home')
+    else:
+      print('Not valid')  
+  else:
+    intent=Intent.objects.get(id=pk)
+    form=IntentForm(instance=intent)
+  return render(request,'accounts/edit_home.html',{'form':form})  
+
+def delete_intent(request,pk):
+  if request.method=='POST':
+    intent=Intent.objects.get(id=pk)
+    intent.delete()
+    return HttpResponseRedirect('/home')
+
 def chatbotPage(request):
-     # Creating ChatBot Instance
+  # Creating ChatBot Instance
   chatbot = ChatBot(
-    'AedificoBot',
+    request.user.username,
     storage_adapter='chatterbot.storage.SQLStorageAdapter',
     logic_adapters=[
         'chatterbot.logic.MathematicalEvaluation',
@@ -48,10 +77,11 @@ def chatbotPage(request):
     return JsonResponse({'status':'OK','response':str(response)})
   else:
  
+    print(request.user)
 
   # Training with Personal Ques & Ans 
     conversation = []
-    intent=Intent.objects.all()
+    intent=request.user.intent_set.all()
     for i in intent:
       conversation.append(i.trigger)
       conversation.append(i.response)

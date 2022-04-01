@@ -10,14 +10,16 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
-    <title>Home</title>
+    <title>Intents</title>
   </head>
   <body>
     <div class="container px-4">
       <br />
+      you can generate your intents here, {{user}}
+
+      <br />
       <form class="row" action="" method="post">
         {% csrf_token %}
-
         <div class="row gx-3 gy-2">
           <div class="col-md-2"></div>
           <div class="col-md-4">
@@ -40,10 +42,17 @@
       </form>
       <br />
     </div>
-
     {% for i in intent %}
     <div class="card">
-      <div class="card-header">{{i.id}}</div>
+      <div class="card-header">
+        <a type="button" href="{% url 'edit' i.id %}" class="btn btn-warning"
+          >Edit</a
+        >
+        <form action="{% url 'delete' i.id %}" method="post" class="d-inline">
+          {% csrf_token %}
+          <input type="submit" class="btn btn-danger" value="Delete" />
+        </form>
+      </div>
       <div class="card-body">
         <blockquote class="blockquote mb-0">
           <p>Trigger: {{i.trigger}}</p>
