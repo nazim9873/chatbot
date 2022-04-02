@@ -53,20 +53,9 @@ def delete_intent(request,pk):
 def chatbotPage(request):
   # Creating ChatBot Instance
   chatbot = ChatBot(
-    request.user.username,
-    storage_adapter='chatterbot.storage.SQLStorageAdapter',
-    logic_adapters=[
-        'chatterbot.logic.MathematicalEvaluation',
-        'chatterbot.logic.TimeLogicAdapter',
-        'chatterbot.logic.BestMatch',
-        {
-            'import_path': 'chatterbot.logic.BestMatch',
-            'default_response': 'I am sorry, but I do not understand. I am still learning.',
-            'maximum_similarity_threshold': 0.70
-        }
-    ],
-    database_uri='sqlite:///database.sqlite3'
-)
+    request.user.username
+    ,storage_adapter='chatterbot.storage.SQLStorageAdapter',
+    database_uri='sqlite:///databases/database'+'_'+request.user.username+'.sqlite3')
   if request.method=='POST':
 
     response=chatbot.get_response(request.POST.get('a',"False"))
@@ -77,8 +66,6 @@ def chatbotPage(request):
     return JsonResponse({'status':'OK','response':str(response)})
   else:
  
-    print(request.user)
-
   # Training with Personal Ques & Ans 
     conversation = []
     intent=request.user.intent_set.all()
@@ -90,11 +77,6 @@ def chatbotPage(request):
     trainer = ListTrainer(chatbot)
     trainer.train(conversation)
 
-  # Training with English Corpus Data 
-  #   trainer_corpus = ChatterBotCorpusTrainer(chatbot)
-  #   trainer_corpus.train(
-  #     'chatterbot.corpus.english'
-  # ) 
     return render(request,'bot/chatbot1.html')
 
 def registerPage(request):
